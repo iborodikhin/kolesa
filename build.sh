@@ -1,10 +1,10 @@
 #!/bin/bash
 
 echo "# Как оно в Колесах" > README.md
+echo >> README.md
 
-FILES=`find docs -type f`
-
-for file in `find docs -type f`;
+for file in `ls -1 docs | sort -h`;
 do
-	echo "[$file]($file)" >> README.md
+	id=`echo $file | awk -F. '{print $1}'`
+	echo "[$id]($file)" >> README.md
 done
