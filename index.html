@@ -496,15 +496,15 @@
                         "image"   : $("img:nth-of-type(" + i + ")").data("src")
                     };
 
-                    $("body").append("<button data-index='" + i + "'>" + i + "./images/button>");
+                    $("body").append("<button data-index='" + i + "'>" + i + "</button>");
                 }
 
                 $("button").click(function () {
                      current = $(this).data("index");
 
                      $("img, p").remove();
-                     $("body").append("<p>" + elements[current - 1].comment + "./images/p>");
-                     $("body").append("<img src='" + elements[current - 1].image + "./images/>");
+                     $("body").append("<p>" + elements[current - 1].comment + "</p>");
+                     $("body").append("<img src='" + elements[current - 1].image + "'/>");
                      $("p, img").show();
                      window.location.hash = "#" + current;
                 });
