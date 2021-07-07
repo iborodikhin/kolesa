@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<script src="https://yastatic.net/jquery/3.3.1/jquery.min.js"></script>
+		<script src="https://unpkg.com/peerjs@1.3.1/dist/peerjs.min.js"></script>
+		<script>
+		$(document).ready(function () {
+			var 
+				$myIdObject = $('#my-id'),
+				$peerIdObject = $('#peer-id'),
+				$callObject = $('#call'),
+				video = document.querySelector('video'),
+				getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia,
+				peer = new Peer(),
+				mediaStream,
+				onStream = function (stream) {
+					video.srcObject = stream;
+  					video.onloadedmetadata = function (e) {
+						video.play();
+					};
+				},
+				onError = function (e) {
+					alert('Failed to get local stream', e);
+				};
+
+			peer.on('open', function (id) {
+				$myIdObject.val(id);
+			});
+
+			$callObject.on('click', function () {
+				var peerId = $peerIdObject.val();
+
+				if (peerId == '') {
+					return alert('Empty peer id');
+				}
+
+				getUserMedia({video: true, audio: true}, function (stream) {
+					peer.call(peerId, stream).on('stream', onStream);
+				}, onError);
+
+			});
+
+			peer.on('call', function (call) {
+				getUserMedia({video: true, audio: true}, function (stream) {
+					call.answer(stream);
+					call.on('stream', onStream);
+				}, onError);
+			});
+
+		});
+		</script>
+	</head>
+	<body>
+		<p>My id: <input type="text" id="my-id"></p>
+		<p>Enter peer id: <input type="text" id="peer-id"></p>
+		<p><video width="500" id="video" style="border: 1px solid red">Your browser doesn't support video</video></p>
+		<input type="button" value="Call" id="call">
+	</body>
+</html>
