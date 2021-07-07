@@ -9,19 +9,36 @@
 				$myIdObject = $('#my-id'),
 				$peerIdObject = $('#peer-id'),
 				$callObject = $('#call'),
+				$endObject = $('#end'),
+				$copy = $('#copy'),
 				video = document.querySelector('video'),
 				getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia,
 				peer = new Peer(),
-				mediaStream,
 				onStream = function (stream) {
 					video.srcObject = stream;
   					video.onloadedmetadata = function (e) {
 						video.play();
 					};
+
+					$callObject.hide();
+					$endObject.show();
+					$endObject.on('click', function () {
+						mediaStream.close();
+					});
 				},
 				onError = function (e) {
 					alert('Failed to get local stream', e);
-				};
+				},
+				mediaStream;
+
+			$copy.on('click', function () {
+				var myIdObject = document.querySelector('my-id');
+
+				myIdObject.focus();
+				myIdObject.select();
+
+				document.execCommand('copy');
+			})
 
 			peer.on('open', function (id) {
 				$myIdObject.val(id);
@@ -35,7 +52,8 @@
 				}
 
 				getUserMedia({video: true, audio: true}, function (stream) {
-					peer.call(peerId, stream).on('stream', onStream);
+					mediaStream = peer.call(peerId, stream);
+					mediaStream.on('stream', onStream);
 				}, onError);
 
 			});
@@ -43,8 +61,13 @@
 			peer.on('call', function (call) {
 				if (confirm('Incoming call. Answer?')) {
 					getUserMedia({video: true, audio: true}, function (stream) {
-						call.answer(stream);
-						call.on('stream', onStream);
+						mediaStream = call;
+						mediaStream.answer(stream);
+						mediaStream.on('stream', onStream);
+						media.on('close', function () {
+							$callObject.show();
+							$endObject.hide();
+						});
 					}, onError);
 				}
 			});
@@ -53,9 +76,9 @@
 		</script>
 	</head>
 	<body>
-		<p>My id: <input type="text" id="my-id"></p>
+		<p>My id: <input type="text" id="my-id"> <input type="button" id="copy"></p>
 		<p>Enter peer id: <input type="text" id="peer-id"></p>
 		<p><video width="500" id="video" style="border: 1px solid red">Your browser doesn't support video</video></p>
-		<input type="button" value="Call" id="call">
+		<input type="button" value="Call" id="call"> <input type="button" value="End" id="end" style="display: none">
 	</body>
 </html>
