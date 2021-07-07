@@ -41,10 +41,12 @@
 			});
 
 			peer.on('call', function (call) {
-				getUserMedia({video: true, audio: true}, function (stream) {
-					call.answer(stream);
-					call.on('stream', onStream);
-				}, onError);
+				if (prompt('Incoming call. Answer?')) {
+					getUserMedia({video: true, audio: true}, function (stream) {
+						call.answer(stream);
+						call.on('stream', onStream);
+					}, onError);
+				}
 			});
 
 		});
