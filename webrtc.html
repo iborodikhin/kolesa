@@ -24,6 +24,8 @@
 					$endObject.show();
 					$endObject.on('click', function () {
 						mediaStream.close();
+						$endObject.hide();
+						$callObject.show();
 					});
 				},
 				onError = function (e) {
