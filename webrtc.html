@@ -41,7 +41,7 @@
 			});
 
 			peer.on('call', function (call) {
-				if (prompt('Incoming call. Answer?')) {
+				if (confirm('Incoming call. Answer?')) {
 					getUserMedia({video: true, audio: true}, function (stream) {
 						call.answer(stream);
 						call.on('stream', onStream);
